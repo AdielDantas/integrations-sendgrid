@@ -1,6 +1,7 @@
 package com.devsuperior.integrations.services;
 
 import com.devsuperior.integrations.dto.EmailDTO;
+import com.devsuperior.integrations.services.exception.EmailException;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -39,13 +40,12 @@ public class EmailService {
             Response response = sendGrid.api(request);
             if (response.getStatusCode() >= 400 && response.getStatusCode() <= 500) {
                 LOG.error("Error sending email: " + response.getBody());
+                throw  new EmailException(response.getBody());
             }
-            else {
-                LOG.info("Email sent! Status = " + response.getStatusCode());
-            }
+            LOG.info("Email sent! Status = " + response.getStatusCode());
         }
         catch (IOException e) {
-            e.printStackTrace();
+            throw new EmailException(e.getMessage());
         }
     }
 }
